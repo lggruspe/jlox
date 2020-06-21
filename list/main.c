@@ -49,17 +49,38 @@ Node *find(List *list, char const *str)
     return NULL;
 }
 
+void delete_node(List *list, Node *node)
+{
+    // Delete node, assuming it's in the list.
+    // Doesn't do anything else if node is the list null node.
+    assert(list && list->null && node);
+    assert(list->null != node);
+    node->prev->next = node->next;
+    node->next->prev = node->prev;
+    free(node->value);
+    free(node);
+}
+
 void delete(List *list, char const *str)
 {
     // Delete first occurrence of the string in the list.
     assert(list && list->null && str);
     Node *node = find(list, str);
     if (node) {
-        node->prev->next = node->next;
-        node->next->prev = node->prev;
-        free(node->value);
-        free(node);
+        delete_node(list, node);
     } 
+}
+
+void destroy_list(List *list)
+{
+    assert(list && list->null);
+    Node *node = list->null->next;
+    while (node != list->null) {
+        Node *next = node->next;
+        delete_node(list, node);
+        node = next;
+    }
+    free(list->null);
 }
 
 int main()
@@ -82,4 +103,6 @@ int main()
     delete(&list, "world");
     assert(list.null->next == hello);
     assert(list.null->prev == hello);
+
+    destroy_list(&list);
 }
