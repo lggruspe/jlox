@@ -69,6 +69,8 @@ class Scanner {
         case '/':
             if (match('/')) {
                 while (peek() != '\n' && !isAtEnd()) advance();
+            } else if (match('*')) {
+                blockComment();
             } else {
                 addToken(SLASH);
             }
@@ -133,6 +135,20 @@ class Scanner {
         String value = source.substring(start + 1, current - 1);
         // NOTE if escape sequences were supported, they'd have to be unescaped here
         addToken(STRING, value);
+    }
+
+    private void blockComment() {
+        while (!isAtEnd() && !(peek() == '*' && peekNext() == '/')) {
+            if (peek() == '\n') line++;
+            advance();
+        }
+        if (isAtEnd()) {
+            Lox.error(line, "Unterminated block comment");
+            return;
+        }
+        // Eat */.
+        advance();
+        advance();
     }
 
     private boolean match(char expected) {
