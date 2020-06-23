@@ -29,8 +29,9 @@ def define_visitor(base_name, types):
     definition = "    interface Visitor<R> {\n"
     for t in types:
         type_name = t.split(':')[0].strip()
-        definition += f"    R visit{type_name}{base_name}({type_name} {base_name.lower()});\n"
+        definition += f"        R visit{type_name}{base_name}({type_name} {base_name.lower()});\n"
     definition += "    }\n"
+    return definition
 
 def define_ast(output_directory, base_name, types):
     path = join(output_directory, base_name + ".java")
@@ -38,7 +39,7 @@ def define_ast(output_directory, base_name, types):
         print("package com.craftinginterpreters.lox;\n", file=file)
         print("import java.util.List;\n", file=file)
         print("abstract class {} {{".format(base_name), file=file)
-        define_visitor(base_name, types)
+        print(define_visitor(base_name, types), file=file)
         body = ""
         for t in types:
             class_name = t.split(':')[0].strip()
