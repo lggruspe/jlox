@@ -12,9 +12,9 @@ abstract class Expr {
 
     static class Binary extends Expr {
         Binary(Expr left, Token operator, Expr right) {
-            this.Expr = Expr;
-            this.Token = Token;
-            this.Expr = Expr;
+            this.left = left;
+            this.operator = operator;
+            this.right = right;
         }
 
         @Override
@@ -29,7 +29,7 @@ abstract class Expr {
 
     static class Grouping extends Expr {
         Grouping(Expr expression) {
-            this.Expr = Expr;
+            this.expression = expression;
         }
 
         @Override
@@ -42,7 +42,7 @@ abstract class Expr {
 
     static class Literal extends Expr {
         Literal(Object value) {
-            this.Object = Object;
+            this.value = value;
         }
 
         @Override
@@ -55,8 +55,8 @@ abstract class Expr {
 
     static class Unary extends Expr {
         Unary(Token operator, Expr right) {
-            this.Token = Token;
-            this.Expr = Expr;
+            this.operator = operator;
+            this.right = right;
         }
 
         @Override

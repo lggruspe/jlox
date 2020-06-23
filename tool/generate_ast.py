@@ -11,7 +11,7 @@ def define_type(base_name, class_name, fields):
 
     field_list = fields.split(", ")
     for field in field_list:
-        name= field.split(' ')[0]
+        name = field.split(' ')[1]
         definition += f"            this.{name} = {name};\n"
     definition += "        }\n\n"
 
