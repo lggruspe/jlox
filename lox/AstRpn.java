@@ -6,6 +6,15 @@ class AstRpn implements Expr.Visitor<String> {
     }
 
     @Override
+    public String visitTernaryExpr(Expr.Ternary expr) {
+        return String.format("%s %s %s %s ",
+                polish(expr.left),
+                polish(expr.middle),
+                polish(expr.right),
+                "?:");
+    }
+
+    @Override
     public String visitBinaryExpr(Expr.Binary expr) {
         return String.format("%s %s %s ",
                 polish(expr.left),
