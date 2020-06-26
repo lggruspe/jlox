@@ -51,13 +51,17 @@ def define_ast(output_directory, base_name, types):
 
 define_ast(args.output, "Expr", [
     "Ternary    : Expr left, Expr middle, Expr right",
+    "Assign     : Token name, Expr value",
     "Binary     : Expr left, Token operator, Expr right",
     "Grouping   : Expr expression",
     "Literal    : Object value",
     "Unary      : Token operator, Expr right",
+    "Variable   : Token name",
 ])
 
 define_ast(args.output, "Stmt", [
+    "Block      : List<Stmt> statements",
     "Expression : Expr expression",
     "Print      : Expr expression",
+    "Var        : Token name, Expr initializer",
 ])
