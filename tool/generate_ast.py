@@ -50,8 +50,14 @@ def define_ast(output_directory, base_name, types):
         print("}", file=file)
 
 define_ast(args.output, "Expr", [
+    "Ternary    : Expr left, Expr middle, Expr right",
     "Binary     : Expr left, Token operator, Expr right",
     "Grouping   : Expr expression",
     "Literal    : Object value",
     "Unary      : Token operator, Expr right",
+])
+
+define_ast(args.output, "Stmt", [
+    "Expression : Expr expression",
+    "Print      : Expr expression",
 ])
