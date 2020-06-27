@@ -11,8 +11,11 @@ def define_type(base_name, class_name, fields):
 
     field_list = fields.split(", ")
     for field in field_list:
-        name = field.split(' ')[1]
-        definition += f"            this.{name} = {name};\n"
+        try:
+            name = field.split(' ')[1]
+            definition += f"            this.{name} = {name};\n"
+        except IndexError:
+            pass
     definition += "        }\n\n"
 
     definition += "        @Override\n"
@@ -21,7 +24,8 @@ def define_type(base_name, class_name, fields):
     definition += "        }\n\n"
 
     for field in field_list:
-        definition += f"        final {field};\n"
+        if field:
+            definition += f"        final {field};\n"
     definition += "    }\n\n"
     return definition
 
@@ -67,4 +71,5 @@ define_ast(args.output, "Stmt", [
     "Print      : Expr expression",
     "Var        : Token name, Expr initializer",
     "While      : Expr condition, Stmt body",
+    "Break      : ",
 ])
