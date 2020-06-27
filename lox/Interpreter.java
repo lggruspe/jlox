@@ -3,6 +3,8 @@ package com.craftinginterpreters.lox;
 import java.util.List;
 
 class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
+    static class BreakException extends RuntimeException {}
+
     private Environment environment = new Environment();
     private static final Object uninitialized = new Object();
 
@@ -76,9 +78,17 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
 
     @Override
+    public Void visitBreakStmt(Stmt.Break stmt) {
+        throw new BreakException();
+    }
+
+    @Override
     public Void visitWhileStmt(Stmt.While stmt) {
-        while (isTruthy(evaluate(stmt.condition))) {
-            execute(stmt.body);
+        try {
+            while (isTruthy(evaluate(stmt.condition))) {
+                execute(stmt.body);
+            }
+        } catch (BreakException error) {
         }
         return null;
     }
