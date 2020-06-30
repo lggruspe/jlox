@@ -230,8 +230,8 @@ class Parser {
         if (!match(QUESTION)) {
             return expr;
         }
-        Expr middle = ternary();
-        consume(COLON, "Expect ':' in expression.");
+        Expr middle = expression();
+        consume(COLON, "Expect ':' after then branch of conditional expression.");
         Expr right = ternary();
         return new Expr.Ternary(expr, middle, right);
     }
