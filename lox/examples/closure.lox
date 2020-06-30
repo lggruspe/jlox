@@ -1,0 +1,14 @@
+fun greet(greeting) {
+    fun _(name) {
+        print greeting + ", " + name + "!";
+    }
+    return _;
+}
+
+var hello = greet("hello");
+var bye = greet("bye");
+
+hello("world");
+hello("foo");
+bye("bar");
+bye("world");
