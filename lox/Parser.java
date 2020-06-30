@@ -225,17 +225,6 @@ class Parser {
         return expr;
     }
 
-    private Expr ternary() {
-        Expr expr = equality();
-        if (!match(QUESTION)) {
-            return expr;
-        }
-        Expr middle = expression();
-        consume(COLON, "Expect ':' after then branch of conditional expression.");
-        Expr right = ternary();
-        return new Expr.Ternary(expr, middle, right);
-    }
-
     private Expr equality() {
         Expr expr = comparison();
         while (match(BANG_EQUAL, EQUAL_EQUAL)) {
