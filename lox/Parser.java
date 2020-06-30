@@ -91,7 +91,7 @@ class Parser {
                             new Stmt.Expression(increment)));
             }
 
-            if (condition != null) {
+            if (condition == null) {
                 condition = new Expr.Literal(true);
             }
             body = new Stmt.While(condition, body);
