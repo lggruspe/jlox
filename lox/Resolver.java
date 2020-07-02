@@ -181,7 +181,12 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 
     private void declare(Token name) {
         if (scopes.isEmpty()) return;
-        scopes.peek().put(name.lexeme, false);
+        Map<String, Boolean> scope = scopes.peek();
+        if (scope.containsKey(name.lexeme)) {
+            Lox.error(name,
+                    "Variable with this name already declared in this scope.");
+        }
+        scope.put(name.lexeme, false);
     }
 
     private void define(Token name) {
