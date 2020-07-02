@@ -132,7 +132,12 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     @Override
     public Object visitAssignExpr(Expr.Assign expr) {
         Object value = evaluate(expr.value);
-        environment.assign(expr.name, value);
+        Integer distance = locals.get(expr);
+        if (distance != null) {
+            environment.assignAt(distance, expr.name, value);
+        } else {
+            globals.assign(expr.name, value);
+        }
         return value;
     }
 
@@ -270,10 +275,21 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     @Override
     public Object visitVariableExpr(Expr.Variable expr) {
-        Object value = environment.get(expr.name);
+        return lookUpVariable(expr.name, expr);
+    }
+
+    private Object lookUpVariable(Token name, Expr expr) {
+        Integer distance = locals.get(expr);
+        Object value = null;
+        if (distance != null) {
+            value = environment.getAt(distance, name.lexeme);
+        } else {
+            value = globals.get(name);
+        }
+
         if (value == uninitialized) {
-            throw new RuntimeError(expr.name,
-                    "Uninitialized variable '" + expr.name.lexeme + "'.");
+            throw new RuntimeError(name,
+                    "Uninitialized variable '" + name.lexeme + "'.");
         }
         return value;
     }
