@@ -1,7 +1,7 @@
 all:	com
 
 com:	*.java
-	javac $^ -d .
+	javac $^ -d . -g
 
 .PHONY:	clean
 clean:

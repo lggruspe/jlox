@@ -7,7 +7,7 @@ parser = ArgumentParser("jlox")
 parser.add_argument("script", nargs='?', default=None)
 args = parser.parse_args()
 
-cmd = split("java com.craftinginterpreters.lox.Lox")
+cmd = split("java -ea com.craftinginterpreters.lox.Lox")
 if args.script:
     cmd.append(quote(args.script))
 
