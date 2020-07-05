@@ -83,7 +83,13 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
             getters.put(getter.name.lexeme, function);
         }
 
-        LoxClass cls = new LoxClass(stmt.name.lexeme, methods, getters);
+        Map<String, LoxFunction> statics = new HashMap<>();
+        for (Stmt.Function method : stmt.statics) {
+            LoxFunction function = new LoxFunction(method, environment, false, false);
+            statics.put(method.name.lexeme, function);
+        }
+
+        LoxClass cls = new LoxClass(stmt.name.lexeme, methods, getters, statics);
         environment.assign(stmt.name, cls);
         return null;
     }
@@ -272,6 +278,8 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
                 }
             }
             return value;
+        } else if (object instanceof LoxClass) {
+            return ((LoxClass)object).findStaticMethod(expr.name.lexeme);
         }
         throw new RuntimeError(expr.name,
                 "Only instances have properties.");

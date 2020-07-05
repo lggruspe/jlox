@@ -7,12 +7,15 @@ class LoxClass implements LoxCallable {
     final String name;
     private final Map<String, LoxFunction> methods;
     private final Map<String, LoxFunction> getters;
+    private final Map<String, LoxFunction> statics;
 
     LoxClass(String name, Map<String, LoxFunction> methods,
-            Map<String, LoxFunction> getters) {
+            Map<String, LoxFunction> getters,
+            Map<String, LoxFunction> statics) {
         this.name = name;
         this.methods = methods;
         this.getters = getters;
+        this.statics = statics;
     }
 
     LoxFunction findMethod(String name) {
@@ -25,6 +28,13 @@ class LoxClass implements LoxCallable {
     LoxFunction findGetter(String name) {
         if (getters.containsKey(name)) {
             return getters.get(name);
+        }
+        return null;
+    }
+
+    LoxFunction findStaticMethod(String name) {
+        if (statics.containsKey(name)) {
+            return statics.get(name);
         }
         return null;
     }
