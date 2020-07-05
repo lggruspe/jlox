@@ -30,10 +30,11 @@ abstract class Stmt {
     }
 
     static class Class extends Stmt {
-        Class(Token name, List<Stmt.Function> methods, List<Stmt.Function> getters) {
+        Class(Token name, List<Stmt.Function> methods, List<Stmt.Function> getters, List<Stmt.Function> statics) {
             this.name = name;
             this.methods = methods;
             this.getters = getters;
+            this.statics = statics;
         }
 
         @Override
@@ -44,6 +45,7 @@ abstract class Stmt {
         final Token name;
         final List<Stmt.Function> methods;
         final List<Stmt.Function> getters;
+        final List<Stmt.Function> statics;
     }
 
     static class Expression extends Stmt {
