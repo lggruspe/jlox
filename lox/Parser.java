@@ -41,7 +41,11 @@ class Parser {
         consume(LEFT_BRACE, "Expect '{' before class body.");
         List<Stmt.Function> methods = new ArrayList<>();
         while (!check(RIGHT_BRACE) && !isAtEnd()) {
-            methods.add(function("method"));
+            if (peekNext().type == LEFT_PAREN) {
+                methods.add(function("method"));
+            } else {
+                methods.add(getter());
+            }
         }
         consume(RIGHT_BRACE, "Expect '}' after class body.");
         return new Stmt.Class(name, methods);
@@ -188,6 +192,13 @@ class Parser {
         consume(LEFT_BRACE, "Expect '{' before " + kind + " body.");
         List<Stmt> body = block();
         return new Stmt.Function(name, parameters, body);
+    }
+
+    private Stmt.Function getter() {
+        Token name = consume(IDENTIFIER, "Expect method name.");
+        consume(LEFT_BRACE, "Expect '{' after getter name.");
+        List<Stmt> body = block();
+        return new Stmt.Function(name, new ArrayList<Token>(), body);
     }
 
     private Expr.Lambda lambda() {
@@ -396,6 +407,12 @@ class Parser {
 
     private Token peek() {
         return tokens.get(current);
+    }
+
+    private Token peekNext() {
+        Token token = peek();
+        if (token.type == EOF) return token;
+        return tokens.get(current + 1);
     }
 
     private Token previous() {
