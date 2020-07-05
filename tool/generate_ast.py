@@ -58,6 +58,7 @@ define_ast(args.output, "Expr", [
     "Assign     : Token name, Expr value",
     "Binary     : Expr left, Token operator, Expr right",
     "Call       : Expr callee, Token paren, List<Expr> arguments",
+    "Get        : Expr object, Token name",
     "Grouping   : Expr expression",
     "Lambda     : List<Token> params, List<Stmt> body",
     "Literal    : Object value",
