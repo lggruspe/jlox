@@ -76,6 +76,9 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
             }
             resolveFunction(method, declaration);
         }
+        for (Stmt.Function getter : stmt.getters) {
+            resolveFunction(getter, FunctionType.GETTER);
+        }
         defineClass(stmt.name);
         endScope();
 
