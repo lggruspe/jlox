@@ -1,5 +1,6 @@
 package com.craftinginterpreters.lox;
 
+import java.io.Closeable;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -20,25 +21,37 @@ class LoxFile {
             : new FileReader(path);
     }
 
-    String read(Token token, String text) throws IOException {
+    void close() {
+        Closeable file = (Closeable)(this.file);
+        try {
+            file.close();
+        } catch (IOException error) {
+        }
+    }
+
+    String read() {
         if (!(file instanceof FileReader)) {
-            throw new RuntimeError(token,
-                    "Cannot read from file '" + path + "'.");
+            return "";
         }
         FileReader reader = (FileReader)file;
         StringBuilder sb = new StringBuilder();
-        for (int c = reader.read(); c != -1; c = reader.read()) {
-            sb.append((char)c);
+        try {
+            for (int c = reader.read(); c != -1; c = reader.read()) {
+                sb.append((char)c);
+            }
+        } catch (IOException error) {
         }
         return sb.toString();
     }
 
-    void write(Token token, String text) throws IOException {
+    void write(String text) {
         if (!(file instanceof FileWriter)) {
-            throw new RuntimeError(token,
-                    "Cannot write to file '" + path + "'.");
+            return;
         }
         FileWriter writer = (FileWriter)file;
-        writer.write(text, 0, text.length());
+        try {
+            writer.write(text, 0, text.length());
+        } catch (IOException error) {
+        }
     }
 }

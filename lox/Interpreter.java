@@ -1,5 +1,11 @@
 package com.craftinginterpreters.lox;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,6 +14,12 @@ import java.util.Map;
 class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     static class BreakException extends RuntimeException {}
     static class ContinueException extends RuntimeException {}
+    static class RuntimeErrorInFunction extends RuntimeException {
+        final String message;
+        RuntimeErrorInFunction(String message) {
+            this.message = message;
+        }
+    }
 
     final Environment globals = new Environment();
     private Environment environment = globals;
@@ -24,6 +36,86 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
                     Interpreter interpreter,
                     List<Object> arguments) {
                 return (double)System.currentTimeMillis() / 1000.0;
+            }
+
+            @Override
+            public String toString() { return "<native fn>"; }
+        });
+
+        globals.define("open", new LoxCallable() {
+            @Override
+            public int arity() { return 2; }
+
+            @Override
+            public Object call(
+                    Interpreter interpreter,
+                    List<Object> arguments) {
+                try {
+                    String path = (String)(arguments.get(0));
+                    LoxFile.FileMode mode = null;
+                    switch ((String)(arguments.get(1))) {
+                    case "r": mode = LoxFile.FileMode.READ; break;
+                    case "w": mode = LoxFile.FileMode.WRITE; break;
+                    default:
+                        throw new RuntimeErrorInFunction("Invalid file mode.");
+                    }
+                    return new LoxFile(path, mode);
+                } catch (FileNotFoundException error) {
+                    throw new RuntimeErrorInFunction("Failed to open file.");
+                } catch (IOException error) {
+                    throw new RuntimeErrorInFunction("Failed to open file.");
+                }
+            }
+
+            @Override
+            public String toString() { return "<native fn>"; }
+        });
+
+        globals.define("close", new LoxCallable() {
+            @Override
+            public int arity() { return 1; }
+
+            @Override
+            public Object call(
+                    Interpreter interpreter,
+                    List<Object> arguments) {
+                LoxFile file = (LoxFile)(arguments.get(0));
+                file.close();
+                return null;
+            }
+
+            @Override
+            public String toString() { return "<native fn>"; }
+        });
+
+        globals.define("read", new LoxCallable() {
+            @Override
+            public int arity() { return 1; }
+
+            @Override
+            public Object call(
+                    Interpreter interpreter,
+                    List<Object> arguments) {
+                LoxFile file = (LoxFile)(arguments.get(0));
+                return file.read();
+            }
+
+            @Override
+            public String toString() { return "<native fn>"; }
+        });
+
+        globals.define("write", new LoxCallable() {
+            @Override
+            public int arity() { return 2; }
+
+            @Override
+            public Object call(
+                    Interpreter interpreter,
+                    List<Object> arguments) {
+                LoxFile file = (LoxFile)(arguments.get(0));
+                String text = (String)(arguments.get(1));
+                file.write(text);
+                return null;
             }
 
             @Override
@@ -290,7 +382,11 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
                         function.arity(),
                         arguments.size()));
         }
-        return function.call(this, arguments);
+        try {
+            return function.call(this, arguments);
+        } catch (RuntimeErrorInFunction error) {
+            throw new RuntimeError(expr.paren, error.message);
+        }
     }
 
     @Override
@@ -301,7 +397,11 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
             if (value instanceof LoxFunction) {
                 LoxFunction function = (LoxFunction)value;
                 if (function.isGetter) {
-                    value = function.call(this, new ArrayList<Object>());
+                    try {
+                        value = function.call(this, new ArrayList<Object>());
+                    } catch (RuntimeErrorInFunction error) {
+                        throw new RuntimeError(expr.name, error.message);
+                    }
                 }
             }
             return value;
