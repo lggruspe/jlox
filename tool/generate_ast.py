@@ -81,4 +81,5 @@ define_ast(args.output, "Stmt", [
     "Var        : Token name, Expr initializer",
     "While      : Expr condition, Stmt body",
     "Break      : ",
+    "Continue   : ",
 ])

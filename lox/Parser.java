@@ -134,6 +134,7 @@ class Parser {
 
     private Stmt statement() {
         if (match(BREAK)) return breakStatement();
+        if (match(CONTINUE)) return continueStatement();
         if (match(FOR)) return forStatement();
         if (match(IF)) return ifStatement();
         if (match(PRINT)) return printStatement();
@@ -159,6 +160,14 @@ class Parser {
         }
         consume(SEMICOLON, "Expect ';' after 'break'.");
         return new Stmt.Break();
+    }
+
+    private Stmt continueStatement() {
+        if (loopDepth == 0) {
+            error(previous(), "Must be inside a loop to use 'continue'.");
+        }
+        consume(SEMICOLON, "Expect ';' after 'continue'.");
+        return new Stmt.Continue();
     }
 
     private Stmt ifStatement() {

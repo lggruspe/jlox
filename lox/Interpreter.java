@@ -7,6 +7,7 @@ import java.util.Map;
 
 class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     static class BreakException extends RuntimeException {}
+    static class ContinueException extends RuntimeException {}
 
     final Environment globals = new Environment();
     private Environment environment = globals;
@@ -170,10 +171,18 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
 
     @Override
+    public Void visitContinueStmt(Stmt.Continue stmt) {
+        throw new ContinueException();
+    }
+
+    @Override
     public Void visitWhileStmt(Stmt.While stmt) {
         try {
             while (isTruthy(evaluate(stmt.condition))) {
-                execute(stmt.body);
+                try {
+                    execute(stmt.body);
+                } catch (ContinueException error) {
+                }
             }
         } catch (BreakException error) {
         }
