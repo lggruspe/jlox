@@ -1,0 +1,25 @@
+fun mod(n, k) {
+    if (n < 0) {
+        n = -n;
+    }
+    if (k < 0) {
+        k = -k;
+    }
+    if (k == 0) {
+        return; // error
+    }
+    while (n > 0) {
+        n = n - k;
+    }
+    if (n < 0) {
+        n = n + k;
+    }
+    return n;
+}
+
+for (var i = 0; i < 10; i = i + 1) {
+    if (mod(i, 2) == 0) {
+        continue;   // disallow in for loop
+    }
+    print i;
+}
