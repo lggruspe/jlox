@@ -5,17 +5,17 @@ import java.util.Map;
 
 class LoxClass implements LoxCallable {
     final String name;
-    final LoxClass superclass;
+    final LoxClass superClass;
     private final Map<String, LoxFunction> methods;
     private final Map<String, LoxFunction> getters;
     private final Map<String, LoxFunction> statics;
 
-    LoxClass(String name, LoxClass superclass,
+    LoxClass(String name, LoxClass superClass,
             Map<String, LoxFunction> methods,
             Map<String, LoxFunction> getters,
             Map<String, LoxFunction> statics) {
         this.name = name;
-        this.superclass = superclass;
+        this.superClass = superClass;
         this.methods = methods;
         this.getters = getters;
         this.statics = statics;
@@ -25,6 +25,9 @@ class LoxClass implements LoxCallable {
         if (methods.containsKey(name)) {
             return methods.get(name);
         }
+        if (superClass != null) {
+            return superClass.findMethod(name);
+        }
         return null;
     }
 
@@ -32,12 +35,18 @@ class LoxClass implements LoxCallable {
         if (getters.containsKey(name)) {
             return getters.get(name);
         }
+        if (superClass != null) {
+            return superClass.findGetter(name);
+        }
         return null;
     }
 
     LoxFunction findStaticMethod(String name) {
         if (statics.containsKey(name)) {
             return statics.get(name);
+        }
+        if (superClass != null) {
+            return superClass.findStaticMethod(name);
         }
         return null;
     }
