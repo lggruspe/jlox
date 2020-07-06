@@ -142,9 +142,10 @@ abstract class Stmt {
     }
 
     static class While extends Stmt {
-        While(Expr condition, Stmt body) {
+        While(Expr condition, Stmt body, boolean isForLoop) {
             this.condition = condition;
             this.body = body;
+            this.isForLoop = isForLoop;
         }
 
         @Override
@@ -154,6 +155,7 @@ abstract class Stmt {
 
         final Expr condition;
         final Stmt body;
+        final boolean isForLoop;
     }
 
     static class Break extends Stmt {
@@ -168,7 +170,8 @@ abstract class Stmt {
     }
 
     static class Continue extends Stmt {
-        Continue() {
+        Continue(Token keyword) {
+            this.keyword = keyword;
         }
 
         @Override
@@ -176,6 +179,7 @@ abstract class Stmt {
             return visitor.visitContinueStmt(this);
         }
 
+        final Token keyword;
     }
 
 

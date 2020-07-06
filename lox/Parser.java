@@ -79,7 +79,7 @@ class Parser {
             Expr condition = expression();
             consume(RIGHT_PAREN, "Expect ')' after condition.");
             Stmt body = statement();
-            return new Stmt.While(condition, body);
+            return new Stmt.While(condition, body, false);
         } finally {
             --loopDepth;
         }
@@ -121,7 +121,7 @@ class Parser {
             if (condition == null) {
                 condition = new Expr.Literal(true);
             }
-            body = new Stmt.While(condition, body);
+            body = new Stmt.While(condition, body, true);
 
             if (initializer != null) {
                 body = new Stmt.Block(Arrays.asList(initializer, body));
@@ -166,8 +166,9 @@ class Parser {
         if (loopDepth == 0) {
             error(previous(), "Must be inside a loop to use 'continue'.");
         }
+        Stmt stmt = new Stmt.Continue(previous());
         consume(SEMICOLON, "Expect ';' after 'continue'.");
-        return new Stmt.Continue();
+        return stmt;
     }
 
     private Stmt ifStatement() {

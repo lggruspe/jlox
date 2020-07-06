@@ -35,6 +35,9 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
         METHOD
     }
 
+    private enum LoopType { NONE, WHILE, FOR }
+    private LoopType currentLoop = LoopType.NONE;
+
     Resolver(Interpreter interpreter) {
         this.interpreter = interpreter;
     }
@@ -201,6 +204,9 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 
     @Override
     public Void visitContinueStmt(Stmt.Continue stmt) {
+        if (currentLoop != LoopType.WHILE) {
+            Lox.error(stmt.keyword, "Cannot use 'continue' inside for loop.");
+        }
         return null;
     }
 
@@ -249,8 +255,13 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 
     @Override
     public Void visitWhileStmt(Stmt.While stmt) {
+        LoopType enclosingLoop = currentLoop;
+        currentLoop = stmt.isForLoop ? LoopType.FOR : LoopType.WHILE;
+
         resolve(stmt.condition);
         resolve(stmt.body);
+
+        currentLoop = enclosingLoop;
         return null;
     }
 
