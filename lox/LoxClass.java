@@ -27,7 +27,10 @@ class LoxClass implements LoxCallable {
             return methods.get(name);
         }
         for (LoxClass superclass : superclasses) {
-            return superclass.findMethod(name);
+            LoxFunction result = superclass.findMethod(name);
+            if (result != null) {
+                return result;
+            }
         }
         return null;
     }
@@ -37,7 +40,10 @@ class LoxClass implements LoxCallable {
             return getters.get(name);
         }
         for (LoxClass superclass : superclasses) {
-            return superclass.findGetter(name);
+            LoxFunction result = superclass.findGetter(name);
+            if (result != null) {
+                return result;
+            }
         }
         return null;
     }
@@ -47,7 +53,10 @@ class LoxClass implements LoxCallable {
             return statics.get(name);
         }
         for (LoxClass superclass : superclasses) {
-            return superclass.findStaticMethod(name);
+            LoxFunction result = superclass.findStaticMethod(name);
+            if (result != null) {
+                return result;
+            }
         }
         return null;
     }
