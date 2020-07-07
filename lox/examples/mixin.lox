@@ -1,0 +1,26 @@
+class A {
+    a() { print "a"; }
+    d() { print "a"; }
+}
+
+class B {
+    b() { print "b"; }
+    d() { print "b"; }
+    e() { print "b"; }
+}
+
+class C {
+    c() { print "c"; }
+    e() { print "c"; }
+    f() { print "c"; }
+}
+
+class D < A, B, C {}
+
+D().a();
+D().b();
+D().c();
+D().d();
+D().e();
+D().f();
+D().g();
