@@ -72,7 +72,7 @@ define_ast(args.output, "Expr", [
 
 define_ast(args.output, "Stmt", [
     "Block      : List<Stmt> statements",
-    "Class      : Token name, Expr.Variable superclass, List<Stmt.Function> methods, List<Stmt.Function> getters, List<Stmt.Function> statics",
+    "Class      : Token name, List<Expr.Variable> mixins, List<Stmt.Function> methods, List<Stmt.Function> getters, List<Stmt.Function> statics",
     "Expression : Expr expression",
     "Function   : Token name, List<Token> params, List<Stmt> body",
     "If         : Expr condition, Stmt thenBranch, Stmt elseBranch",
