@@ -1,10 +1,13 @@
-OBJECTS = $(patsubst %.c,%.o,$(shell ls *.c))
+OBJECTS = $(patsubst %.c,%.o,$(filter-out main.c,$(shell ls *.c)))
 
-main:	$(OBJECTS)
+main:	main.o $(OBJECTS)
 	gcc -g $^ -o $@
 
-$(OBJECTS):	%.o:	%.c
+$(OBJECTS):	%.o:	%.c %.h
+	gcc -g -c $< -o $@
+
+main.o:	main.c
 	gcc -g -c $< -o $@
 
 clean:
-	rm -rf $(OBJECTS) main
+	rm -rf $(OBJECTS) main main.o
