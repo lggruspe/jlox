@@ -2,15 +2,12 @@
 #define clox_vm_h
 
 #include "chunk.h"
-
-#define STACK_MAX 256
+#include "stack.h"
 
 typedef struct {
     Chunk* chunk;
     uint8_t* ip;
-
-    Value stack[STACK_MAX];
-    Value* stackTop;
+    VMStack stack;
 } VM;
 
 typedef enum {

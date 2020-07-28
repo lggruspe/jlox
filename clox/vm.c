@@ -7,7 +7,7 @@
 VM vm;
 
 static void resetStack() {
-    vm.stackTop = vm.stack;
+    freeVMStack(&vm.stack);
 }
 
 void initVM() {
@@ -15,7 +15,7 @@ void initVM() {
 }
 
 void freeVM () {
-
+    freeVMStack(&vm.stack);
 }
 
 static InterpretResult run() {
@@ -31,9 +31,9 @@ static InterpretResult run() {
     for (;;) {
 #ifdef DEBUG_TRACE_EXECUTION
         printf("          ");
-        for (Value* slot = vm.stack; slot < vm.stackTop; slot++) {
+        for (int i = 0; i < vm.stack.count; ++i) {
             printf("[ ");
-            printValue(*slot);
+            printValue(vm.stack.table[i]);
             printf(" ]");
         }
         printf("\n");
@@ -73,11 +73,9 @@ InterpretResult interpret(Chunk* chunk) {
 }
 
 void push(Value value) {
-    *vm.stackTop = value;
-    vm.stackTop++;
+    pushDynamic(&vm.stack, value);
 }
 
 Value pop() {
-    vm.stackTop--;
-    return *vm.stackTop;
+    return popDynamic(&vm.stack);
 }
