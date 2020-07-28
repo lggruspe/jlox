@@ -24,8 +24,8 @@ static InterpretResult run() {
 #define BINARY_OP(op) \
     do { \
         double b = pop(); \
-        double a = pop(); \
-        push(a op b); \
+        double a = *(vm.stackTop - 1); \
+        *(vm.stackTop - 1) = a op b; \
     } while (false)
 
     for (;;) {
