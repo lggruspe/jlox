@@ -21,6 +21,7 @@ typedef struct {
 typedef enum {
     PREC_NONE,
     PREC_ASSIGNMENT,    // =
+    PREC_TERNARY,       // ?:
     PREC_OR,            // or
     PREC_AND,           // and
     PREC_EQUALITY,      // == !=
@@ -432,6 +433,12 @@ static void unary(bool canAssign) {
     }
 }
 
+static void ternary() {
+    parsePrecedence(PREC_TERNARY);  // Right-associative
+    consume(TOKEN_COLON, "Expect colon.");
+    expression();
+}
+
 ParseRule rules[] = {
     [TOKEN_LEFT_PAREN]    = { grouping, call,   PREC_CALL   },
     [TOKEN_RIGHT_PAREN]   = { NULL,     NULL,   PREC_NONE   },
@@ -471,6 +478,8 @@ ParseRule rules[] = {
     [TOKEN_TRUE]          = { literal,  NULL,   PREC_NONE   },
     [TOKEN_VAR]           = { NULL,     NULL,   PREC_NONE   },
     [TOKEN_WHILE]         = { NULL,     NULL,   PREC_NONE   },
+    [TOKEN_QUESTION]      = { NULL,     ternary,PREC_TERNARY},
+    [TOKEN_COLON]         = { NULL,     NULL,   PREC_NONE   },
     [TOKEN_ERROR]         = { NULL,     NULL,   PREC_NONE   },
     [TOKEN_EOF]           = { NULL,     NULL,   PREC_NONE   },
 };
