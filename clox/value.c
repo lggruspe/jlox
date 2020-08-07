@@ -42,7 +42,9 @@ bool valuesEqual(Value a, Value b) {
     case VAL_NIL: return true;
     case VAL_NUMBER: return AS_NUMBER(a) == AS_NUMBER(b);
     case VAL_OBJ: {
-        // TODO what if a or b isn't a string object?
+        if (!IS_STRING(a) || !IS_STRING(b)) {
+            return false;
+        }
         ObjString* aString = AS_STRING(a);
         ObjString* bString = AS_STRING(b);
         return aString->length == bString->length &&

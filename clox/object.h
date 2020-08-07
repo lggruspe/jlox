@@ -21,10 +21,11 @@ struct sObj {
 struct sObjString {
     Obj obj;
     int length;
-    char* chars;
+    char chars[];
 };
 
-ObjString* takeString(char* chars, int length);
+ObjString* allocateString(int length);
+void insertChars(ObjString* string, const char* chars, int start, int length);
 ObjString* copyString(const char* chars, int length);
 
 void printObject(Value value);
