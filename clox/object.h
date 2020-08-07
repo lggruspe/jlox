@@ -21,10 +21,12 @@ struct sObj {
 struct sObjString {
     Obj obj;
     int length;
-    char* chars;
+    const char* chars;
+    bool owned;
 };
 
 ObjString* takeString(char* chars, int length);
+ObjString* borrowString(const char* chars, int length);
 ObjString* copyString(const char* chars, int length);
 
 void printObject(Value value);
