@@ -453,7 +453,7 @@ static void declaration() {
 static void statement() {
     if (match(TOKEN_PRINT)) {
         printStatement();
-    } if (match(TOKEN_LEFT_BRACE)) {
+    } else if (match(TOKEN_LEFT_BRACE)) {
         beginScope();
         block();
         endScope();
