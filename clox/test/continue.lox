@@ -4,3 +4,31 @@ for (var i = 0; i < 10; i = i + 1) {
     }
     print i;
 }
+
+print "---";
+
+var i = -1;
+while (i < 10) {
+    i = i + 1;
+    if (i == 5) {
+        continue;
+    }
+    print i;
+}
+
+print "---";
+
+for (var i = 0; i < 3; i = i + 1) {
+    if (i == 1) {
+        continue;
+    }
+
+    for (var j = 0; j < 3; j = j + 1) {
+        if (j == 1) {
+            continue;
+        }
+        print i;
+        print j;
+        print "";
+    }
+}

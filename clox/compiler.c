@@ -476,7 +476,6 @@ static void continueStatement() {
 
 static void forStatement() {
     int backupTarget = current->continueTarget;
-
     beginScope();
     consume(TOKEN_LEFT_PAREN, "Expect '(' after 'for'.");
 
@@ -549,6 +548,7 @@ static void printStatement() {
 }
 
 static void whileStatement() {
+    int backupTarget = current->continueTarget;
     int loopStart = currentChunk()->count;
     consume(TOKEN_LEFT_PAREN, "Expect '(' after 'while'.");
     expression();
@@ -556,10 +556,12 @@ static void whileStatement() {
 
     int exitJump = emitJump(OP_JUMP_IF_FALSE);
     emitByte(OP_POP);
+    current->continueTarget = loopStart;
     statement();
     emitLoop(loopStart);
     patchJump(exitJump);
     emitByte(OP_POP);
+    current->continueTarget = backupTarget;
 }
 
 static void synchronize() {
