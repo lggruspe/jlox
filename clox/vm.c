@@ -192,6 +192,7 @@ static InterpretResult run() {
             case OP_RETURN: {
                 return INTERPRET_OK;
             }
+            case OP_DUP:        push(peek(0)); break;
         }
     }
 
