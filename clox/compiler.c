@@ -48,6 +48,7 @@ typedef struct {
     Local locals[UINT8_COUNT];
     int localCount;
     int scopeDepth;
+    int continueTarget;
 } Compiler;
 
 Parser parser;
@@ -164,6 +165,7 @@ static void patchJump(int offset) {
 static void initCompiler(Compiler* compiler) {
     compiler->localCount = 0;
     compiler->scopeDepth = 0;
+    compiler->continueTarget = -1; // invalid target if < 0
     current = compiler;
 }
 
@@ -463,7 +465,18 @@ static void expressionStatement() {
     emitByte(OP_POP);
 }
 
+static void continueStatement() {
+    int target = current->continueTarget;
+    if (target < 0) {
+        error("Invalid 'continue' outside of loop.");
+    }
+    emitLoop(target);
+    consume(TOKEN_SEMICOLON, "Expect ';' after 'continue'.");
+}
+
 static void forStatement() {
+    int backupTarget = current->continueTarget;
+
     beginScope();
     consume(TOKEN_LEFT_PAREN, "Expect '(' after 'for'.");
 
@@ -481,7 +494,6 @@ static void forStatement() {
     if (!match(TOKEN_SEMICOLON)) {
         expression();
         consume(TOKEN_SEMICOLON, "Expect ';' after loop condition.");
-
         exitJump = emitJump(OP_JUMP_IF_FALSE);
         emitByte(OP_POP);
     }
@@ -497,6 +509,8 @@ static void forStatement() {
         emitLoop(loopStart);
         loopStart = incrementStart;
         patchJump(bodyJump);
+
+        current->continueTarget = incrementStart;
     }
 
     statement();
@@ -509,6 +523,7 @@ static void forStatement() {
     }
 
     endScope();
+    current->continueTarget = backupTarget;
 }
 
 static void ifStatement() {
@@ -590,6 +605,8 @@ static void statement() {
         beginScope();
         block();
         endScope();
+    } else if (match(TOKEN_CONTINUE)) {
+        continueStatement();
     } else {
         expressionStatement();
     }
