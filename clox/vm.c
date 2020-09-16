@@ -12,8 +12,17 @@
 
 VM vm;
 
+static void raiseNativeError(char const* message) {
+    vm.nativeError = message;
+}
+
 static Value clockNative(int argCount, Value* args) {
     return NUMBER_VAL((double)clock() / CLOCKS_PER_SEC);
+}
+
+static Value abortNative(int argCount, Value* args) {
+    raiseNativeError("Program aborted.");
+    return NIL_VAL;
 }
 
 static void resetStack() {
@@ -59,6 +68,8 @@ void initVM() {
     initTable(&vm.globals);
     initTable(&vm.strings);
     defineNative("clock", clockNative);
+    defineNative("abort", abortNative);
+    vm.nativeError = NULL;
 }
 
 void freeVM () {
@@ -98,7 +109,11 @@ static bool callValue(Value callee, int argCount) {
                 Value result = native(argCount, vm.stackTop - argCount);
                 vm.stackTop -= argCount + 1;
                 push(result);
-                return true;
+                if (!vm.nativeError) {
+                    return true;
+                }
+                runtimeError(vm.nativeError);
+                return false;
             }
             default:
                 break;
