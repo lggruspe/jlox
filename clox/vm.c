@@ -167,6 +167,7 @@ static bool callValue(Value callee, int argCount) {
                     return true;
                 }
                 runtimeError(vm.nativeError);
+                vm.nativeError = NULL;
                 return false;
             }
             default:
