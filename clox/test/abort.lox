@@ -1,0 +1,11 @@
+fun foo() {
+    print "foo";
+    abort();
+    print "bar";
+}
+
+fun main() {
+    foo();
+}
+
+main();

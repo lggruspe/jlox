@@ -25,6 +25,8 @@ typedef struct {
     Table strings;
     ObjUpvalue* openUpvalues;
     Obj* objects;
+
+    char const* nativeError;
 } VM;
 
 typedef enum {
