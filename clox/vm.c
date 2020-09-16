@@ -1,5 +1,6 @@
 #include <stdarg.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <time.h>
 
@@ -22,6 +23,57 @@ static Value clockNative(int argCount, Value* args) {
 
 static Value abortNative(int argCount, Value* args) {
     raiseNativeError("Program aborted.");
+    return NIL_VAL;
+}
+
+static Value readNative(int argCount, Value *args) {
+    if (!IS_STRING(args[0])) {
+        raiseNativeError("Expected filename (string) as first argument.");
+        return NIL_VAL;
+    }
+    FILE *fp = fopen(AS_CSTRING(args[0]), "r");
+    if (!fp) {
+        raiseNativeError("Could not read from file.");
+        return NIL_VAL;
+    }
+
+    fseek(fp, 0L, SEEK_END);
+    size_t fileSize = ftell(fp);
+    rewind(fp);
+    char* buffer = malloc(fileSize + 1);
+    if (buffer == NULL) {
+        raiseNativeError("Not enough memory to read file.");
+        goto cleanup;
+    }
+    size_t bytesRead = fread(buffer, sizeof(char), fileSize, fp);
+    if (bytesRead < fileSize) {
+        raiseNativeError("Could not read file.");
+        goto cleanup;
+    }
+    buffer[bytesRead] = '\0';
+    fclose(fp);
+    return OBJ_VAL(takeString(buffer, fileSize));
+cleanup:
+    fclose(fp);
+    return NIL_VAL;
+}
+
+static Value writeNative(int argCount, Value *args) {
+    if (!IS_STRING(args[0])) {
+        raiseNativeError("Expected filename (string) as first argument.");
+        return NIL_VAL;
+    }
+    if (!IS_STRING(args[1])) {
+        raiseNativeError("Expected content (string) as second argument.");
+        return NIL_VAL;
+    }
+    FILE *fp = fopen(AS_CSTRING(args[0]), "w");
+    if (!fp) {
+        raiseNativeError("Could not write to file.");
+        return NIL_VAL;
+    }
+    fprintf(fp, AS_CSTRING(args[1]));
+    fclose(fp);
     return NIL_VAL;
 }
 
@@ -69,6 +121,8 @@ void initVM() {
     initTable(&vm.strings);
     defineNative("clock", clockNative);
     defineNative("abort", abortNative);
+    defineNative("read", readNative);
+    defineNative("write", writeNative);
     vm.nativeError = NULL;
 }
 

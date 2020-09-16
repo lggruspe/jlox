@@ -1,0 +1,2 @@
+var content = read("in.txt");
+write("out.txt", content);
