@@ -1,0 +1,21 @@
+fun Vector(x, y) {
+    fun members(name) {
+        if (name == "x") {
+            return x;
+        } else if (name == "y") {
+            return y;
+        } else if (name == "add") {
+            fun _add(other) {
+                return Vector(x + other("x"), y + other("y"));
+            }
+            return _add;
+        }
+    }
+    return members;
+}
+
+var u = Vector(2, 3);
+var v = Vector(3, 4);
+var w = (u)("add")(v);
+print w("x");
+print w("y");
