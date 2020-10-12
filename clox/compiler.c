@@ -53,6 +53,7 @@ typedef struct {
 
 typedef enum {
     TYPE_FUNCTION,
+    TYPE_METHOD,
     TYPE_SCRIPT,
 } FunctionType;
 
@@ -196,6 +197,14 @@ static void initCompiler(Compiler* compiler, FunctionType type) {
     local->depth = 0;
     local->name.start = "";
     local->name.length = 0;
+    local->isCaptured = false;
+    if (type != TYPE_FUNCTION) {
+        local->name.start = "this";
+        local->name.length = 4;
+    } else {
+        local->name.start = "";
+        local->name.length = 0;
+    }
 }
 
 static ObjFunction* endCompiler() {
@@ -432,6 +441,10 @@ static void variable(bool canAssign) {
     namedVariable(parser.previous, canAssign);
 }
 
+static void this_(bool canAssign) {
+    variable(false);
+}
+
 static void unary(bool canAssign) {
     TokenType operatorType = parser.previous.type;
     parsePrecedence(PREC_UNARY);
@@ -478,7 +491,7 @@ ParseRule rules[] = {
     [TOKEN_PRINT]         = { NULL,     NULL,   PREC_NONE   },
     [TOKEN_RETURN]        = { NULL,     NULL,   PREC_NONE   },
     [TOKEN_SUPER]         = { NULL,     NULL,   PREC_NONE   },
-    [TOKEN_THIS]          = { NULL,     NULL,   PREC_NONE   },
+    [TOKEN_THIS]          = { this_,    NULL,   PREC_NONE   },
     [TOKEN_TRUE]          = { literal,  NULL,   PREC_NONE   },
     [TOKEN_VAR]           = { NULL,     NULL,   PREC_NONE   },
     [TOKEN_WHILE]         = { NULL,     NULL,   PREC_NONE   },
@@ -589,7 +602,7 @@ static void method() {
     consume(TOKEN_IDENTIFIER, "Expect method name.");
     uint8_t constant = identifierConstant(&parser.previous);
 
-    FunctionType type = TYPE_FUNCTION;
+    FunctionType type = TYPE_METHOD;
     function(type);
     emitBytes(OP_METHOD, constant);
 }
